@@ -46,10 +46,15 @@ def ordered(model,sort):
 def login(body:Login,response:Response,db:Session=Depends(get_db)):
     u=db.query(User).filter_by(username=body.username).first()
     if not u or not pwd.verify(body.password,u.password_hash): error(401,'INVALID_CREDENTIALS','The username or password is incorrect.')
-    raw=token(); db.add(UserSession(user_id=u.id,token_hash=token_hash(raw),expires_at=expires())); db.commit(); response.set_cookie('route53_session',raw,httponly=True,samesite='lax',max_age=86400,secure=os.getenv('ENV')=='production'); return {'username':u.username}
+    raw=token(); db.add(UserSession(user_id=u.id,token_hash=token_hash(raw),expires_at=expires())); db.commit(); 
+    is_prod = os.getenv('ENV') == 'production'
+    response.set_cookie('route53_session',raw,httponly=True,samesite='none' if is_prod else 'lax',max_age=86400,secure=is_prod)
+    return {'username':u.username}
 @app.post('/api/auth/logout',status_code=204)
 def logout(request:Request, response:Response,user=Depends(current_user),db:Session=Depends(get_db)):
-    db.query(UserSession).filter_by(id=request.state.session_id, user_id=user.id).delete(); db.commit(); response.delete_cookie('route53_session')
+    db.query(UserSession).filter_by(id=request.state.session_id, user_id=user.id).delete(); db.commit();
+    is_prod = os.getenv('ENV') == 'production'
+    response.delete_cookie('route53_session', samesite='none' if is_prod else 'lax', secure=is_prod)
 @app.get('/api/auth/me')
 def me(user=Depends(current_user)): return {'id':user.id,'username':user.username}
 @app.get('/api/hosted-zones')
