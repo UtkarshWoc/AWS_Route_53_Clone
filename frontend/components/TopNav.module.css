@@ -1,0 +1,445 @@
+.topNav {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 12px 0 4px;
+  background: #111820;
+  color: #f1f3f3;
+  flex-shrink: 0;
+  z-index: 1000;
+  gap: 0;
+  overflow: visible;
+  position: relative;
+  border-bottom: 1px solid #384554;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 12px 0 12px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 100%;
+  margin-left: auto;
+}
+
+.logoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px 0 10px;
+  border-radius: 0;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.logoLink:hover {
+  background: #19212c;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.qButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  color: #fff;
+  font-weight: bold;
+}
+
+.qButton:hover {
+  background: #19212c;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 40px;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.iconButton:hover {
+  background: #19212c;
+  color: #ffffff;
+}
+
+.iconButtonActive {
+  background: #19212c;
+  color: #7ec8e3;
+}
+
+.iconButton svg {
+  display: block;
+}
+
+.notificationsCluster {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  align-self: stretch;
+  height: 100%;
+}
+
+.notifBadge {
+  position: absolute;
+  top: 8px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #d13212;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 720px;
+  height: 32px;
+  background: #111820;
+  border: 1px solid #687687;
+  border-radius: 8px;
+  padding: 0 8px 0 10px;
+  gap: 8px;
+  color: #a4a4ad;
+}
+
+.search:focus-within {
+  border-color: #7d8998;
+}
+
+.searchIcon,
+.historyIcon {
+  flex-shrink: 0;
+  color: #a4a4ad;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1;
+  color: #a4a4ad;
+  min-width: 0;
+  padding: 0;
+  font-style: italic;
+}
+
+.searchInput:focus,
+.searchInput:not(:placeholder-shown) {
+  font-style: normal;
+  color: #f1f3f3;
+}
+
+.searchInput::placeholder {
+  color: #a4a4ad;
+  font-style: italic;
+}
+
+.searchInput::-webkit-search-decoration,
+.searchInput::-webkit-search-cancel-button,
+.searchInput::-webkit-search-results-button,
+.searchInput::-webkit-search-results-decoration {
+  display: none;
+}
+
+.shortcut {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #a4a4ad;
+  white-space: nowrap;
+  font-family: inherit;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.historyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #a4a4ad;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.historyButton:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.regionButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 12px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.regionButton:hover {
+  background: #19212c;
+}
+
+.accountMenu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  align-self: stretch;
+  height: 100%;
+  margin-left: 4px;
+  padding-right: 2px;
+  overflow: visible;
+}
+
+.accountPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 0 0 8px 8px;
+  background: #7d8998;
+  color: #151920;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.accountPill:hover,
+.accountPillOpen {
+  background: #8a96a4;
+}
+
+.accountUsername {
+  margin-top: 4px;
+  padding-right: 2px;
+  color: #7ec8e3;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.caret {
+  display: block;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.accountCluster {
+  position: relative;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  height: 100%;
+}
+
+.moreButton {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 10px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.moreButton:hover {
+  background: #19212c;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+.desktopOnly {
+  display: contents;
+}
+
+.accountMenu.desktopOnly {
+  display: flex;
+}
+
+.searchDesktop {
+  width: 100%;
+}
+
+.popover {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 320px;
+  background: #18212c;
+  border: 1px solid #384554;
+  border-radius: 8px;
+  padding: 16px;
+  color: #c7cfda;
+  z-index: 2000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.popover h2 { margin: 0 0 12px; font-size: 16px; color: #fff; }
+.popover .plan-grid { display: flex; gap: 16px; margin-bottom: 12px; }
+.popover .plan-grid div { display: flex; flex-direction: column; }
+.popover .plan-grid strong { font-size: 11px; text-transform: uppercase; color: #a4a4ad; }
+.popover .account-note { font-size: 12px; line-height: 1.4; color: #a4a4ad; margin-bottom: 12px; }
+.popover hr { border: none; border-top: 1px solid #384554; margin: 12px 0; }
+.popover dl { display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; margin: 0; }
+.popover dt { color: #a4a4ad; }
+.popover dd { margin: 0; color: #fff; }
+.popover .account-links { display: flex; flex-direction: column; gap: 8px; }
+.popover .account-links a { color: #29a8ff; text-decoration: none; font-size: 13px; }
+.popover .account-links a:hover { text-decoration: underline; }
+.popover button.multi-session, .popover button.account-signout {
+  width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 8px 0; cursor: pointer; font-size: 13px;
+}
+.popover button.account-signout { color: #29a8ff; margin-top: 8px; }
+
+@media (max-width: 767px) {
+  .topNav {
+    height: 48px;
+    padding: 0 4px 0 2px;
+  }
+
+  .center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    pointer-events: none;
+    z-index: 1100;
+  }
+
+  .center :global([class*="rootOpen"]) {
+    pointer-events: auto;
+  }
+
+  .mobileOnly {
+    display: contents;
+  }
+
+  .desktopOnly {
+    display: none !important;
+  }
+
+  .accountMenu.desktopOnly {
+    display: none !important;
+  }
+
+  .moreButton {
+    display: inline-flex;
+  }
+
+  .qButton {
+    width: 36px;
+  }
+
+  .qIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .iconButton {
+    width: 34px;
+  }
+
+  .logoLink {
+    padding: 0 8px 0 6px;
+  }
+
+  .logoImage {
+    height: 18px;
+  }
+
+  .right {
+    position: relative;
+  }
+
+  .divider {
+    height: 18px;
+    margin: 0;
+  }
+
+  .accountCluster {
+    margin-left: 0;
+  }
+}

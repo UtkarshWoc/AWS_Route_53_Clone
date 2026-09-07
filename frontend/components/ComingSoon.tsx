@@ -1,0 +1,1 @@
+export default function ComingSoon({title}:{title:string}){const label=title.replace(/^Route 53\s*/i,'').toUpperCase();return <section className="coming-minimal" aria-label={`${label} coming soon`}><h1>{label}</h1><p>COMING SOON</p></section>}

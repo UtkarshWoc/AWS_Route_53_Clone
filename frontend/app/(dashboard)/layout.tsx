@@ -1,0 +1,2 @@
+'use client';import { Suspense } from 'react';import { useRouter } from 'next/navigation';import Shell from '@/components/Shell';import { useAuth } from '@/lib/auth';
+export default function Layout({children}:{children:React.ReactNode}){const {user,loading}=useAuth(),router=useRouter();if(!loading&&!user){router.replace('/login');return null}return <Shell><Suspense fallback={null}>{children}</Suspense></Shell>}
