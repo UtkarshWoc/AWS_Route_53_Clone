@@ -3,14 +3,13 @@
   align-items: center;
   height: 48px;
   padding: 0 12px 0 4px;
-  background: #111820;
+  background: var(--aws-header-bg);
   color: #f1f3f3;
   flex-shrink: 0;
   z-index: 1000;
   gap: 0;
   overflow: visible;
   position: relative;
-  border-bottom: 1px solid #384554;
 }
 
 .left {
@@ -44,14 +43,16 @@
   padding: 0 12px 0 10px;
   border-radius: 0;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 20px;
-  color: #fff;
-  letter-spacing: -1px;
 }
 
 .logoLink:hover {
-  background: #19212c;
+  background: var(--aws-header-hover);
+}
+
+.logoImage {
+  display: block;
+  height: 20px;
+  width: auto;
 }
 
 .divider {
@@ -73,12 +74,16 @@
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
-  color: #fff;
-  font-weight: bold;
 }
 
 .qButton:hover {
-  background: #19212c;
+  background: var(--aws-header-hover);
+}
+
+.qIcon {
+  display: block;
+  width: 28px;
+  height: 28px;
 }
 
 .iconButton {
@@ -98,12 +103,12 @@
 }
 
 .iconButton:hover {
-  background: #19212c;
+  background: var(--aws-header-hover);
   color: #ffffff;
 }
 
 .iconButtonActive {
-  background: #19212c;
+  background: var(--aws-header-hover);
   color: #7ec8e3;
 }
 
@@ -142,8 +147,8 @@
   width: 100%;
   max-width: 720px;
   height: 32px;
-  background: #111820;
-  border: 1px solid #687687;
+  background: var(--aws-header-search-bg);
+  border: 1px solid var(--aws-header-search-border);
   border-radius: 8px;
   padding: 0 8px 0 10px;
   gap: 8px;
@@ -244,9 +249,13 @@
 }
 
 .regionButton:hover {
-  background: #19212c;
+  background: var(--aws-header-hover);
 }
 
+/**
+ * AWS account chrome: gray tab hangs from top of nav,
+ * federated username sits under it in sky blue, right-aligned.
+ */
 .accountMenu {
   position: relative;
   display: flex;
@@ -322,7 +331,7 @@
 }
 
 .moreButton:hover {
-  background: #19212c;
+  background: var(--aws-header-hover);
 }
 
 .mobileOnly {
@@ -341,37 +350,6 @@
   width: 100%;
 }
 
-.popover {
-  position: absolute;
-  top: 48px;
-  right: 0;
-  width: 320px;
-  background: #18212c;
-  border: 1px solid #384554;
-  border-radius: 8px;
-  padding: 16px;
-  color: #c7cfda;
-  z-index: 2000;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-
-.popover h2 { margin: 0 0 12px; font-size: 16px; color: #fff; }
-.popover .plan-grid { display: flex; gap: 16px; margin-bottom: 12px; }
-.popover .plan-grid div { display: flex; flex-direction: column; }
-.popover .plan-grid strong { font-size: 11px; text-transform: uppercase; color: #a4a4ad; }
-.popover .account-note { font-size: 12px; line-height: 1.4; color: #a4a4ad; margin-bottom: 12px; }
-.popover hr { border: none; border-top: 1px solid #384554; margin: 12px 0; }
-.popover dl { display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; margin: 0; }
-.popover dt { color: #a4a4ad; }
-.popover dd { margin: 0; color: #fff; }
-.popover .account-links { display: flex; flex-direction: column; gap: 8px; }
-.popover .account-links a { color: #29a8ff; text-decoration: none; font-size: 13px; }
-.popover .account-links a:hover { text-decoration: underline; }
-.popover button.multi-session, .popover button.account-signout {
-  width: 100%; text-align: left; background: transparent; border: none; color: #fff; padding: 8px 0; cursor: pointer; font-size: 13px;
-}
-.popover button.account-signout { color: #29a8ff; margin-top: 8px; }
-
 @media (max-width: 767px) {
   .topNav {
     height: 48px;
@@ -379,6 +357,7 @@
   }
 
   .center {
+    /* Keep mounted so mobile search can open; collapse layout slot */
     position: absolute;
     left: 0;
     right: 0;

@@ -56,15 +56,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const toggleGroup = (label: string) => setCollapsed(current => ({ ...current, [label]: !current[label] }));
 
   return <NotificationsProvider>
-      <TopNav 
-        search={search} 
-        setSearch={setSearch} 
-        submitSearch={submitSearch}
-        sidebarCollapsed={sidebarCollapsed} 
-        setSidebarCollapsed={setSidebarCollapsed} 
-        createZonePage={createZonePage}
-        logout={logout}
-      />
+      <TopNav />
     <div className={`shell${createZonePage ? ' shell-create' : ''}${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
       {!createZonePage && <nav className={`side${sidebarCollapsed ? ' is-collapsed' : ''}`} aria-label="Route 53 navigation">
         <div className="side-title"><h3>Route 53</h3><button className="side-collapse" aria-label="Collapse navigation" aria-expanded={!sidebarCollapsed} onClick={() => setSidebarCollapsed(true)}>‹</button></div>
