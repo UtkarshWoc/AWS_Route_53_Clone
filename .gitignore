@@ -5,6 +5,7 @@ backend/test.db
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
+frontend/.env
 backend/.env
 __pycache__/
 *.pyc
