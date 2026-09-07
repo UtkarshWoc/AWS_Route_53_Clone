@@ -147,8 +147,8 @@
   width: 100%;
   max-width: 720px;
   height: 32px;
-  background: var(--aws-header-search-bg);
-  border: 1px solid var(--aws-header-search-border);
+  background: var(--aws-header-search-bg, #151e28);
+  border: 1px solid #879196;
   border-radius: 8px;
   padding: 0 8px 0 10px;
   gap: 8px;

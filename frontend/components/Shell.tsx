@@ -39,9 +39,15 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       if (event instanceof KeyboardEvent && event.key === 'Escape') setPopover(null);
       if (event instanceof MouseEvent && popoverRef.current && !popoverRef.current.contains(event.target as Node)) setPopover(null);
     };
+    const toggle = () => setSidebarCollapsed(c => !c);
     document.addEventListener('mousedown', close);
     document.addEventListener('keydown', close);
-    return () => { document.removeEventListener('mousedown', close); document.removeEventListener('keydown', close); };
+    window.addEventListener('toggle-sidebar', toggle);
+    return () => { 
+      document.removeEventListener('mousedown', close); 
+      document.removeEventListener('keydown', close); 
+      window.removeEventListener('toggle-sidebar', toggle);
+    };
   }, []);
 
   async function logout() {
@@ -59,7 +65,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <TopNav />
     <div className={`shell${createZonePage ? ' shell-create' : ''}${sidebarCollapsed ? ' sidebar-is-collapsed' : ''}`}>
       {!createZonePage && <nav className={`side${sidebarCollapsed ? ' is-collapsed' : ''}`} aria-label="Route 53 navigation">
-        <div className="side-title"><h3>Route 53</h3><button className="side-collapse" aria-label="Collapse navigation" aria-expanded={!sidebarCollapsed} onClick={() => setSidebarCollapsed(true)}>‹</button></div>
+        <div className="side-title"><h3>Route 53</h3><button className="side-collapse" aria-label="Collapse navigation" aria-expanded={!sidebarCollapsed} onClick={() => setSidebarCollapsed(c => !c)}>‹</button></div>
         <div className="side-links">
           {primary.map(item => <Link className={active(item.href) ? 'active' : ''} href={item.href} key={item.label}>{item.label}</Link>)}
           {groups.map(group => { const isCollapsed = collapsed[group.label]; return <section className={`nav-group${isCollapsed ? ' collapsed' : ''}`} key={group.label}><button className="nav-group-toggle" aria-expanded={!isCollapsed} onClick={() => toggleGroup(group.label)}><span aria-hidden="true">{isCollapsed ? '▸' : '▾'}</span>{group.label}</button>{!isCollapsed && group.items.map(item => <Link className={active(item.href) && item.label === 'Traffic policies' ? 'active' : ''} href={item.href} key={item.label}>{item.label}{item.badge && <span className="nav-badge">{item.badge}</span>}</Link>)}</section>; })}
