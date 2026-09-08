@@ -10,3 +10,4 @@ backend/.env
 __pycache__/
 *.pyc
 UI inspos/*
+scaler-assignment-route53
