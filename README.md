@@ -1,38 +1,45 @@
 # AWS Route 53 Clone
 
-A Route 53 console-inspired CRUD application for DNS configuration data. It does not
-## Setup
+A Route 53 console-inspired CRUD application for DNS configuration data. It models DNS configuration data only: it does not resolve DNS, delegate nameservers, or call AWS.
 
-Prerequisites: Python 3.11+, Node.js 20+, and SQLite support.
+## Setup Instructions
 
-```powershell
-Copy-Item backend/.env.example backend/.env
-Copy-Item frontend/.env.example frontend/.env.local
-Set-Location backend
-pip install -r requirements.txt
-python -m app.seed
-uvicorn app.main:app --reload --port 8000
-```
+Prerequisites: Python 3.11+, Node.js 20+, and MySQL support.
 
-In another terminal:
+1. **Environment Setup**
+   ```powershell
+   Copy-Item backend/.env.example backend/.env
+   Copy-Item frontend/.env.example frontend/.env.local
+   ```
 
-```powershell
-Set-Location frontend
-npm install
-npm run dev
-```
+2. **Backend Setup**
+   ```powershell
+   Set-Location backend
+   pip install -r requirements.txt
+   python -m app.seed
+   uvicorn app.main:app --reload --port 8000
+   ```
 
-Open `http://localhost:3000` and sign in with `demo` / `demo1234`.
+3. **Frontend Setup**
+   In another terminal:
+   ```powershell
+   Set-Location frontend
+   npm install
+   npm run dev
+   ```
 
-Docker Compose is also supported:
+4. **Access the Application**
+   Open `http://localhost:3000` and sign in with `demo` / `demo1234`.
 
+**Docker Compose** is also supported:
 ```powershell
 docker compose up --build
 ```
-
 The `route53_data` named volume stores the SQLite database at `/data/app.db`.
 
-## Architecture
+---
+
+## Architecture Overview
 
 ```text
 Next.js 14 App Router -> FastAPI -> SQLAlchemy -> SQLite
@@ -40,30 +47,102 @@ Next.js 14 App Router -> FastAPI -> SQLAlchemy -> SQLite
                               +-- opaque HttpOnly session cookie
 ```
 
-The browser middleware only checks cookie presence to avoid a protected-page flash.
-FastAPI validates the opaque token and ownership on every protected request. Tokens are
-cryptographically random; only their SHA-256 hashes are stored in the database.
+The application follows a standard separated frontend and backend architecture:
+- **Frontend**: Next.js 14 UI, route shell, forms, notifications, and Playwright tests. Uses native fetch and a shared notification context.
+- **Backend**: FastAPI API, SQLAlchemy models, Alembic migration, and seed scripts. Owns all normalization, authorization, record validation, and destructive-operation rules.
 
-The frontend uses native fetch and a shared notification context. The backend owns all
-normalization, authorization, record validation, and destructive-operation rules.
+The browser middleware only checks cookie presence to avoid a protected-page flash. FastAPI validates the opaque token and ownership on every protected request. Tokens are cryptographically random; only their SHA-256 hashes are stored in the database.
 
-## Data model
+---
 
-Users own sessions and hosted zones. Hosted zones own DNS records. New zones receive
-protected NS and SOA records. Zone record counts are computed at read time. The full
-schema is documented in [docs/ERD.md](docs/ERD.md).
+## Database Schema
 
-## API
+Users own sessions and hosted zones. Hosted zones own DNS records. New zones receive protected NS and SOA records. Record counts are computed at read time.
 
-The live interactive API documentation is available at `http://localhost:8000/docs`.
-Endpoint details and the error contract are in [docs/api.md](docs/api.md).
+### Entity Relationship Diagram
 
-All protected endpoints require the `route53_session` cookie. Foreign zones return 404
-to avoid leaking whether another user's resource exists. Errors use:
-
-```json
-{"error":{"code":"ZONE_NOT_FOUND","message":"Hosted zone was not found."}}
+```mermaid
+erDiagram
+  users ||--o{ sessions : has
+  users ||--o{ hosted_zones : owns
+  hosted_zones ||--o{ dns_records : contains
 ```
+
+### Tables
+
+**users**
+| Column | Type | Notes |
+|---|---|---|
+| id | integer | Primary key |
+| username | string | Unique |
+| password_hash | string | bcrypt hash |
+| created_at | datetime | Creation timestamp |
+
+**sessions**
+| Column | Type | Notes |
+|---|---|---|
+| id | integer | Primary key |
+| user_id | integer | Foreign key to users.id |
+| token_hash | string | Unique SHA-256 hash; raw token is cookie-only |
+| created_at | datetime | Creation timestamp |
+| expires_at | datetime | Session expiry |
+
+**hosted_zones**
+| Column | Type | Notes |
+|---|---|---|
+| id | integer | Primary key |
+| user_id | integer | Required foreign key to users.id |
+| name | string | Lowercase, one trailing dot removed |
+| comment | text | Nullable; only editable field |
+| type | string | public or private |
+| created_at | datetime | Creation timestamp |
+| updated_at | datetime | Last update timestamp |
+
+**dns_records**
+| Column | Type | Notes |
+|---|---|---|
+| id | integer | Primary key |
+| hosted_zone_id | integer | Foreign key with ON DELETE CASCADE |
+| name | string | Normalized record name |
+| type | string | A, AAAA, CNAME, TXT, MX, NS, PTR, SRV, CAA, or internal SOA |
+| ttl | integer | Positive TTL |
+| values | JSON | Structured type-specific values |
+| routing_policy | string | Cosmetic routing-policy label |
+| is_default | boolean | Protects auto-created NS/SOA records |
+| created_at | datetime | Creation timestamp |
+| updated_at | datetime | Last update timestamp |
+
+---
+
+## API Overview
+
+The API uses an opaque `route53_session` HttpOnly cookie. Every error is returned as `{"error":{"code":"...","message":"..."}}`. All `/api` hosted-zone and record endpoints require the opaque `route53_session` cookie.
+
+| Method | Endpoint | Purpose | Auth |
+|---|---|---|---|
+| POST | `/api/auth/login` | Create a session | No |
+| POST | `/api/auth/logout` | Delete current session | Yes |
+| GET | `/api/auth/me` | Resolve current user | Yes |
+| GET | `/api/hosted-zones` | List owned zones with search, pagination, and sort | Yes |
+| POST | `/api/hosted-zones` | Create zone and default NS/SOA records | Yes |
+| GET | `/api/hosted-zones/{id}` | Read an owned zone | Yes |
+| PUT | `/api/hosted-zones/{id}` | Update comment only | Yes |
+| DELETE | `/api/hosted-zones/{id}` | Delete an empty zone | Yes |
+| GET | `/api/hosted-zones/{id}/records` | List records with search, type filter, pagination, and sort | Yes |
+| POST | `/api/hosted-zones/{id}/records` | Create a validated user record | Yes |
+| PUT | `/api/hosted-zones/{id}/records/{recordId}` | Update editable record fields | Yes |
+| DELETE | `/api/hosted-zones/{id}/records/{recordId}` | Delete a non-default record | Yes |
+
+### Status and Error Codes
+
+- **401**: No, invalid, or expired session.
+- **404**: Resource does not exist or belongs to another user (prevents leaking existence of another user's resources).
+- **409**: Duplicate zones, non-empty zones, CNAME collisions, and protected default records.
+- **422**: Request validation error.
+
+Known codes include `INVALID_CREDENTIALS`, `SESSION_EXPIRED`, `ZONE_NOT_FOUND`, `ZONE_NAME_TAKEN`, `HOSTED_ZONE_NOT_EMPTY`, `RECORD_NOT_FOUND`, `DEFAULT_RECORD_PROTECTED`, `CNAME_COLLISION`, `VALIDATION_ERROR`, and `FORBIDDEN`.
+
+---
 
 ## Testing
 
@@ -75,61 +154,8 @@ Set-Location ../frontend
 npm run build
 npm run test:e2e
 ```
+The E2E test expects the backend and frontend to be running. Set `E2E_BASE_URL` when the frontend is not on port 3000.
 
-The E2E test expects the backend and frontend to be running. Set `E2E_BASE_URL` when
-the frontend is not on port 3000.
-
-## Bonus features
-
+## Bonus Features
 - `GET /api/hosted-zones/{id}/export?format=json` exports stored zone and record data.
-- `GET /api/hosted-zones/{id}/export?format=bind` formats stored records as a limited
-    BIND-style zone file. Neither export performs DNS resolution.
-
-## Project layout
-
-- `frontend/` - Next.js UI, route shell, forms, notifications, and Playwright tests
-- `backend/` - FastAPI API, SQLAlchemy models, Alembic migration, seed script
-- `docs/` - architecture, ERD, API, visual specification, assumptions, screenshots
-
-## Scope and assumptions
-
-Visual choices and unavailable reference details are documented in
-[docs/assumptions.md](docs/assumptions.md). Features outside DNS configuration CRUD,
-mock authentication, authorization, and Route 53-style UI are intentionally out of
-scope.
-# AWS Route 53 Clone
-
-A Route 53 console-inspired CRUD application with a Next.js frontend, FastAPI API, and persistent SQLite database. It intentionally models DNS configuration data only: it does not resolve DNS, delegate nameservers, or call AWS.
-
-## Quick start
-
-1. Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env.local` if you need non-default values.
-2. In `backend`, create a virtual environment, install `requirements.txt`, run `python -m app.seed`, then `uvicorn app.main:app --reload`.
-3. In `frontend`, run `npm install` then `npm run dev`.
-4. Open `http://localhost:3000` and sign in using **demo** / **demo1234**.
-
-Alternatively run `docker compose up`; the named `route53_data` volume persists SQLite data.
-
-## Architecture
-
-```text
-Next.js 14 UI  →  FastAPI API  →  SQLAlchemy  →  SQLite named volume
-                    │
-                    └── opaque HttpOnly session cookie
-```
-
-The frontend middleware checks cookie presence only to prevent a protected-page flash. FastAPI validates every session and scopes every hosted zone to its owner, so guessed IDs never disclose another user’s data. API documentation is available at `http://localhost:8000/docs`; endpoint details are in [docs/api.md](docs/api.md).
-
-## Data model and behavior
-
-Users own hosted zones; zones own DNS records. Newly created zones receive protected NS and SOA default records. Hosted-zone names are normalized; only comments may be edited. DNS record types A, AAAA, CNAME, TXT, MX, NS, PTR, SRV, and CAA have type-aware server validation; records cannot change type, and CNAME collisions are prevented. See [docs/ERD.md](docs/ERD.md).
-
-## Project layout
-
-- `frontend/` — Next.js UI and reference-informed AWS console layout
-- `backend/` — FastAPI API, SQLite models, auth, validation, seed script
-- `docs/` — API, ERD, visual specification, and documented assumptions
-
-## Assumptions
-
-Visual choices were derived only from the provided `UI inspos` screenshots. See [docs/assumptions.md](docs/assumptions.md).
+- `GET /api/hosted-zones/{id}/export?format=bind` formats stored records as a limited BIND-style zone file. Neither export performs DNS resolution.
